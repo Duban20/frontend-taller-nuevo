@@ -1,0 +1,200 @@
+<p-toast></p-toast>
+
+<!-- ConfirmDialog global -->
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Toolbar: Nuevo, Eliminar Seleccionados, Exportar -->
+<p-toolbar styleClass="mb-4">
+  <ng-template #start>
+    <p-button
+      label="Nuevo"
+      icon="pi pi-plus"
+      class="mr-2"
+      (onClick)="openNew()"
+      severity="secondary"
+    ></p-button>
+    <p-button
+      label="Eliminar"
+      icon="pi pi-trash"
+      outlined="true"
+      (onClick)="deleteSelectedClientes()"
+      [disabled]="!selectedClientes || !selectedClientes.length"
+      severity="secondary"
+    ></p-button>
+  </ng-template>
+  <ng-template #end>
+    <p-button
+      label="Exportar"
+      icon="pi pi-upload"
+      (onClick)="exportCSV()"
+      severity="secondary"
+    ></p-button>
+  </ng-template>
+</p-toolbar>
+
+<!-- Tabla de clientes -->
+<p-table
+  #dt
+  [value]="clientes()"
+  [(selection)]="selectedClientes"
+  dataKey="id"
+  [paginator]="true"
+  [rows]="10"
+  [rowsPerPageOptions]="[5, 10, 20]"
+  [globalFilterFields]="['nombre', 'direccion', 'telefono', 'correo']"
+  [tableStyle]="{ 'min-width': '60rem' }"
+  [rowHover]="true"
+  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} clientes"
+  [showCurrentPageReport]="true"
+>
+  <!-- Caption con título y filtro global -->
+  <ng-template #caption>
+    <div class="flex items-center justify-between">
+      <h5 class="m-0">Gestión de Clientes</h5>
+      <div class="flex items-center">
+            <p-iconfield>
+                <p-inputicon styleClass="pi pi-search" />
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..." />
+            </p-iconfield>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Header de columnas -->
+  <ng-template #header>
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th pSortableColumn="nombre" style="min-width: 14rem">
+        Nombre
+        <p-sortIcon field="nombre"></p-sortIcon>
+      </th>
+      <th pSortableColumn="direccion" style="min-width: 14rem">
+        Dirección
+        <p-sortIcon field="direccion"></p-sortIcon>
+      </th>
+      <th pSortableColumn="telefono" style="min-width: 10rem">
+        Teléfono
+        <p-sortIcon field="telefono"></p-sortIcon>
+      </th>
+      <th pSortableColumn="correo" style="min-width: 16rem">
+        Correo
+        <p-sortIcon field="correo"></p-sortIcon>
+      </th>
+      <th style="min-width: 10rem"></th>
+    </tr>
+  </ng-template>
+
+  <!-- Body: filas de clientes -->
+  <ng-template #body let-cliente>
+    <tr>
+      <td style="width: 3rem">
+        <p-tableCheckbox [value]="cliente"></p-tableCheckbox>
+      </td>
+      <td style="min-width: 14rem">{{ cliente.nombre }}</td>
+      <td style="min-width: 14rem">{{ cliente.direccion }}</td>
+      <td style="min-width: 10rem">{{ cliente.telefono }}</td>
+      <td style="min-width: 16rem">{{ cliente.correo }}</td>
+      <td>
+        <p-button
+          icon="pi pi-pencil"
+          class="mr-2"
+          [rounded]="true"
+          outlined="true"
+          (click)="editCliente(cliente)"
+        ></p-button>
+        <p-button
+          icon="pi pi-trash"
+          severity="danger"
+          [rounded]="true"
+          outlined="true"
+          (click)="deleteCliente(cliente)"
+        ></p-button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Diálogo para crear/editar cliente -->
+<p-dialog
+  header="Detalles del Cliente"
+  [(visible)]="clienteDialog"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+>
+  <ng-template #content>
+    <div class="flex flex-col gap-4">
+      <!-- Nombre -->
+      <div>
+        <label for="nombre" class="block font-bold mb-2">Nombre</label>
+        <input
+          id="nombre"
+          type="text"
+          pInputText
+          [(ngModel)]="cliente.nombre"
+          required
+          autofocus
+        />
+        <small class="text-red-500" *ngIf="submitted && !cliente.nombre">
+          El nombre es requerido.
+        </small>
+      </div>
+      <!-- Dirección -->
+      <div>
+        <label for="direccion" class="block font-bold mb-2">Dirección</label>
+        <input
+          id="direccion"
+          type="text"
+          pInputText
+          [(ngModel)]="cliente.direccion"
+          required
+        />
+        <small class="text-red-500" *ngIf="submitted && !cliente.direccion">
+          La dirección es requerida.
+        </small>
+      </div>
+      <!-- Teléfono -->
+      <div>
+        <label for="telefono" class="block font-bold mb-2">Teléfono</label>
+        <input
+          id="telefono"
+          type="text"
+          pInputText
+          [(ngModel)]="cliente.telefono"
+          required
+        />
+        <small class="text-red-500" *ngIf="submitted && !cliente.telefono">
+          El teléfono es requerido.
+        </small>
+      </div>
+      <!-- Correo -->
+      <div>
+        <label for="correo" class="block font-bold mb-2">Correo</label>
+        <input
+          id="correo"
+          type="email"
+          pInputText
+          [(ngModel)]="cliente.correo"
+          required
+        />
+        <small class="text-red-500" *ngIf="submitted && !cliente.correo">
+          El correo es requerido.
+        </small>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #footer>
+    <p-button
+      label="Cancelar"
+      icon="pi pi-times"
+      text="true"
+      (click)="hideDialog()"
+    ></p-button>
+    <p-button
+      label="Guardar"
+      icon="pi pi-check"
+      (click)="saveCliente()"
+    ></p-button>
+  </ng-template>
+</p-dialog>

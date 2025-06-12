@@ -1,0 +1,7 @@
+:host ::ng-deep .p-card {
+  margin: 20px;
+}
+
+:host ::ng-deep .p-table {
+  margin-top: 1rem;
+}

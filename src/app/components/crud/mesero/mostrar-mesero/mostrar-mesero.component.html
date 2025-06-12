@@ -1,0 +1,186 @@
+<p-toast></p-toast>
+
+<!-- ConfirmDialog global -->
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Toolbar: Nuevo, Eliminar Seleccionados, Exportar -->
+<p-toolbar styleClass="mb-4">
+  <ng-template #start>
+    <p-button
+      label="Nuevo"
+      icon="pi pi-plus"
+      class="mr-2"
+      (onClick)="openNew()"
+      severity="secondary"
+    ></p-button>
+    <p-button
+      label="Eliminar"
+      icon="pi pi-trash"
+      outlined="true"
+      (onClick)="deleteSelectedMeseros()"
+      [disabled]="!selectedMeseros || !selectedMeseros.length"
+      severity="secondary"
+    ></p-button>
+  </ng-template>
+  <ng-template #end>
+    <p-button
+      label="Exportar"
+      icon="pi pi-upload"
+      (onClick)="exportCSV()"
+      severity="secondary"
+    ></p-button>
+  </ng-template>
+</p-toolbar>
+
+<!-- Tabla de meseros -->
+<p-table
+  #dt
+  [value]="meseros()"
+  [(selection)]="selectedMeseros"
+  dataKey="id_mesero"
+  [paginator]="true"
+  [rows]="10"
+  [rowsPerPageOptions]="[5, 10, 20]"
+  [globalFilterFields]="['nombre', 'documento', 'turno']"
+  [tableStyle]="{ 'min-width': '60rem' }"
+  [rowHover]="true"
+  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} meseros"
+  [showCurrentPageReport]="true"
+>
+  <!-- Caption con título y filtro global -->
+  <ng-template #caption>
+    <div class="flex items-center justify-between">
+      <h5 class="m-0">Gestión de Meseros</h5>
+      <div class="flex items-center">
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-search" />
+          <input
+            pInputText
+            type="text"
+            (input)="onGlobalFilter(dt, $event)"
+            placeholder="Buscar..."
+          />
+        </p-iconfield>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Header de columnas -->
+  <ng-template #header>
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th pSortableColumn="nombre" style="min-width: 14rem">
+        Nombre
+        <p-sortIcon field="nombre"></p-sortIcon>
+      </th>
+      <th pSortableColumn="documento" style="min-width: 14rem">
+        Documento
+        <p-sortIcon field="documento"></p-sortIcon>
+      </th>
+      <th pSortableColumn="turno" style="min-width: 10rem">
+        Turno
+        <p-sortIcon field="turno"></p-sortIcon>
+      </th>
+      <th style="min-width: 10rem"></th>
+    </tr>
+  </ng-template>
+
+  <!-- Body: filas de meseros -->
+  <ng-template #body let-mesero>
+    <tr>
+      <td style="width: 3rem">
+        <p-tableCheckbox [value]="mesero"></p-tableCheckbox>
+      </td>
+      <td style="min-width: 14rem">{{ mesero.nombre }}</td>
+      <td style="min-width: 14rem">{{ mesero.documento }}</td>
+      <td style="min-width: 10rem">{{ mesero.turno }}</td>
+      <td>
+        <p-button
+          icon="pi pi-pencil"
+          class="mr-2"
+          [rounded]="true"
+          outlined="true"
+          (click)="editMesero(mesero)"
+        ></p-button>
+        <p-button
+          icon="pi pi-trash"
+          severity="danger"
+          [rounded]="true"
+          outlined="true"
+          (click)="deleteMesero(mesero)"
+        ></p-button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Diálogo para crear/editar mesero -->
+<p-dialog
+  header="Detalles del Mesero"
+  [(visible)]="meseroDialog"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+>
+  <ng-template #content>
+    <div class="flex flex-col gap-4">
+      <!-- Nombre -->
+      <div>
+        <label for="nombre" class="block font-bold mb-2">Nombre</label>
+        <input
+          id="nombre"
+          type="text"
+          pInputText
+          [(ngModel)]="mesero.nombre"
+          required
+          autofocus
+        />
+        <small class="text-red-500" *ngIf="submitted && !mesero.nombre">
+          El nombre es requerido.
+        </small>
+      </div>
+      <!-- Documento -->
+      <div>
+        <label for="documento" class="block font-bold mb-2">Documento</label>
+        <input
+          id="documento"
+          type="text"
+          pInputText
+          [(ngModel)]="mesero.documento"
+          required
+        />
+        <small class="text-red-500" *ngIf="submitted && !mesero.documento">
+          El documento es requerido.
+        </small>
+      </div>
+      <!-- Turno -->
+      <div>
+        <label for="turno" class="block font-bold mb-2">Turno</label>
+        <input
+          id="turno"
+          type="text"
+          pInputText
+          [(ngModel)]="mesero.turno"
+          required
+        />
+        <small class="text-red-500" *ngIf="submitted && !mesero.turno">
+          El turno es requerido.
+        </small>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #footer>
+    <p-button
+      label="Cancelar"
+      icon="pi pi-times"
+      text="true"
+      (click)="hideDialog()"
+    ></p-button>
+    <p-button
+      label="Guardar"
+      icon="pi pi-check"
+      (click)="saveMesero()"
+    ></p-button>
+  </ng-template>
+</p-dialog>

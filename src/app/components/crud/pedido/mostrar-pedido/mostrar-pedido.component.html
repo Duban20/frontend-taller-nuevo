@@ -1,0 +1,130 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Toolbar -->
+<p-toolbar styleClass="mb-4">
+  <ng-template #start>
+    <p-button label="Nuevo" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" severity="secondary"></p-button>
+    <p-button
+      label="Eliminar"
+      icon="pi pi-trash"
+      outlined="true"
+      (onClick)="deleteSelectedPedidos()"
+      [disabled]="!selectedPedidos || !selectedPedidos.length"
+      severity="secondary"
+    ></p-button>
+  </ng-template>
+  <ng-template #end>
+    <p-button label="Exportar" icon="pi pi-upload" (onClick)="exportCSV()" severity="secondary"></p-button>
+  </ng-template>
+</p-toolbar>
+
+<!-- Tabla de pedidos -->
+<p-table
+  #dt
+  [value]="pedidos()"
+  [(selection)]="selectedPedidos"
+  dataKey="id"
+  [paginator]="true"
+  [rows]="10"
+  [rowsPerPageOptions]="[5,10,20]"
+  [globalFilterFields]="['tipo_pedido','estado_actual','cliente.nombre','mesa.numero','mesero.nombre']"
+  [tableStyle]="{ 'min-width': '60rem' }"
+  [rowHover]="true"
+  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} pedidos"
+  [showCurrentPageReport]="true"
+>
+  <ng-template #caption>
+    <div class="flex items-center justify-between">
+      <h5 class="m-0">Gestión de Pedidos</h5>
+      <div class="flex items-center">
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-search"></p-inputicon>
+          <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..." />
+        </p-iconfield>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Header -->
+  <ng-template #header>
+    <tr>
+      <th style="width:3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+      <th pSortableColumn="id">ID<p-sortIcon field="id"></p-sortIcon></th>
+      <th pSortableColumn="tipo_pedido">Tipo<p-sortIcon field="tipo_pedido"></p-sortIcon></th>
+      <th pSortableColumn="tiempo_estimado_preparacion">Prep.<p-sortIcon field="tiempo_estimado_preparacion"></p-sortIcon></th>
+      <th pSortableColumn="tiempo_estimado_entrega">Ent.<p-sortIcon field="tiempo_estimado_entrega"></p-sortIcon></th>
+      <th pSortableColumn="estado_actual">Estado<p-sortIcon field="estado_actual"></p-sortIcon></th>
+      <th pSortableColumn="fecha_hora">Fecha<p-sortIcon field="fecha_hora"></p-sortIcon></th>
+      <th pSortableColumn="cliente.nombre">Cliente<p-sortIcon field="cliente.nombre"></p-sortIcon></th>
+      <th pSortableColumn="mesa.numero">Mesa<p-sortIcon field="mesa.numero"></p-sortIcon></th>
+      <th pSortableColumn="mesero.nombre">Mesero<p-sortIcon field="mesero.nombre"></p-sortIcon></th>
+      <th pSortableColumn="repartidor?.nombre">Repartidor<p-sortIcon field="repartidor?.nombre"></p-sortIcon></th>
+      <th style="min-width: 8rem">Acciones</th>
+    </tr>
+  </ng-template>
+
+  <!-- Body -->
+  <ng-template #body let-pedido>
+    <tr>
+      <td><p-tableCheckbox [value]="pedido"></p-tableCheckbox></td>
+      <td>{{ pedido.id }}</td>
+      <td>{{ pedido.tipo_pedido }}</td>
+      <td>{{ pedido.tiempo_estimado_preparacion }}</td>
+      <td>{{ pedido.tiempo_estimado_entrega }}</td>
+      <td>{{ pedido.estado_actual }}</td>
+      <td>{{ pedido.fecha_hora | date:'short' }}</td>
+      <td>{{ pedido.cliente?.nombre || '—' }}</td>
+      <td>{{ pedido.mesa?.numero || '—' }}</td>
+      <td>{{ pedido.mesero?.nombre || '—' }}</td>
+      <td>{{ pedido.repartidor?.nombre || '—' }}</td>
+      <td>
+        <p-button icon="pi pi-pencil" class="mr-2" rounded="true" outlined="true" (click)="editPedido(pedido)"></p-button>
+        <p-button icon="pi pi-trash" severity="danger" rounded="true" outlined="true" (click)="deletePedido(pedido)"></p-button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Diálogo para crear/editar pedido -->
+<p-dialog header="Detalles del Pedido" [(visible)]="pedidoDialog" [modal]="true" [style]="{ width: '500px' }">
+  <ng-template #content>
+    <div class="flex flex-col gap-4">
+      <!-- Tipo de Pedido -->
+      <div>
+        <label for="tipo" class="block font-bold mb-2">Tipo de Pedido</label>
+        <input id="tipo" type="text" pInputText [(ngModel)]="pedido.tipo_pedido" required autofocus />
+        <small class="text-red-500" *ngIf="submitted && !pedido.tipo_pedido">Requerido.</small>
+      </div>
+      <!-- Estado Actual -->
+      <div>
+        <label for="estado" class="block font-bold mb-2">Estado Actual</label>
+        <input id="estado" type="text" pInputText [(ngModel)]="pedido.estado_actual" required />
+        <small class="text-red-500" *ngIf="submitted && !pedido.estado_actual">Requerido.</small>
+      </div>
+      <!-- Tiempos Estimados -->
+      <div class="flex gap-4">
+        <div class="flex-1">
+          <label for="prep" class="block font-bold mb-2">Prep. (min)</label>
+          <input id="prep" type="number" pInputText [(ngModel)]="pedido.tiempo_estimado_preparacion" />
+        </div>
+        <div class="flex-1">
+          <label for="ent" class="block font-bold mb-2">Ent. (min)</label>
+          <input id="ent" type="number" pInputText [(ngModel)]="pedido.tiempo_estimado_entrega" />
+        </div>
+      </div>
+      <!-- Asociaciones (IDs) -->
+      <div class="flex flex-col gap-2">
+        <label class="font-bold">IDs Asociados</label>
+        <input type="number" pInputText placeholder="Cliente ID" [(ngModel)]="pedido.id_clientes" />
+        <input type="number" pInputText placeholder="Mesa ID" [(ngModel)]="pedido.id_mesa" />
+        <input type="number" pInputText placeholder="Mesero ID" [(ngModel)]="pedido.id_mesero" />
+        <input type="number" pInputText placeholder="Repartidor ID" [(ngModel)]="pedido.id_repartidor" />
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #footer>
+    <p-button label="Cancelar" icon="pi pi-times" text="true" (click)="hideDialog()"></p-button>
+    <p-button label="Guardar" icon="pi pi-check" (click)="savePedido()"></p-button>
+  </ng-template>
+</p-dialog>

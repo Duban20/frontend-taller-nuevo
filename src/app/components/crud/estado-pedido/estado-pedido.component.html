@@ -1,0 +1,54 @@
+<div class="p-fluid p-formgrid p-grid">
+  <!-- Historial de Estados -->
+  <h3 class="p-col-12">Historial de Estados</h3>
+  <ul class="p-col-12">
+    <li *ngFor="let e of estados">
+      {{ e.fecha_hora | date:'short' }} — {{ e.estado }}
+    </li>
+    <li *ngIf="estados.length === 0">No hay fases registradas aún.</li>
+  </ul>
+
+  <!-- Formulario para nueva fase -->
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="p-col-12 p-formgrid p-grid p-mt-3"
+  >
+    <h4 class="p-col-12">Agregar Nueva Fase</h4>
+
+    <!-- Selector de fase, deshabilita ya usada -->
+    <div class="p-field p-col-12 sm:p-col-4">
+      <p-dropdown
+        [options]="opcionesEstados"
+        optionLabel="label"
+        optionValue="value"
+        optionDisabled="disabled"
+        formControlName="estado"
+        placeholder="Seleccionar fase"
+      ></p-dropdown>
+    </div>
+
+    <!-- Fecha y hora -->
+    <div class="p-field p-col-12 sm:p-col-4">
+      <p-calendar
+        formControlName="fecha_hora"
+        [showIcon]="true"
+        [showTime]="true"
+        hourFormat="24"
+        dateFormat="yy-MM-dd"
+        placeholder="Fecha y hora"
+      ></p-calendar>
+    </div>
+
+    <!-- Botón enviar -->
+    <div class="p-field p-col-12 sm:p-col-4">
+      <button
+        pButton
+        type="submit"
+        label="Agregar Estado"
+        icon="pi pi-plus"
+        [disabled]="form.invalid"
+      ></button>
+    </div>
+  </form>
+</div>
