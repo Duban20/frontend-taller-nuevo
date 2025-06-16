@@ -32,7 +32,7 @@ export class LoginComponent {
   onLogin() {
     this.authService.login(this.email, this.password).subscribe({
       next: res => {
-        this.router.navigate(['/layout']);
+        this.router.navigate(['/layout/inicio']);
         console.log("Login exitoso");
         this.messageService.add({ 
           severity: 'success',

@@ -1,0 +1,80 @@
+.welcome-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 75vh;
+    padding: 0 5%;
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    overflow: hidden;
+    animation: fadeInBg 1.5s ease-in;
+  }
+  
+  .welcome-content {
+    max-width: 50%;
+    z-index: 2;
+    animation: slideInLeft 1s ease-out;
+  }
+  
+  .welcome-title {
+    font-size: 3rem;
+    color: #fff;
+    margin: 0 0 1rem;
+    line-height: 1.2;
+  }
+  
+  .brand-name {
+    color: #ffe066;
+    font-style: italic;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1.25rem;
+    color: #f0f0f0;
+    margin-bottom: 2rem;
+  }
+  
+  .welcome-btn {
+    background-color: #ffe066;
+    color: #333;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    &:hover {
+      background-color: #ffd32a;
+      transform: scale(1.05);
+    }
+  }
+  
+  .welcome-image {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 60%;
+    height: 100%;
+    background: url('/assets/images/restaurant-hero.png') no-repeat center center;
+    background-size: cover;
+    opacity: 0;
+    animation: fadeInImage 1s 0.5s ease-in forwards;
+  }
+  
+  /* Animations */
+  @keyframes fadeInBg {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideInLeft {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  
+  @keyframes fadeInImage {
+    from { opacity: 0; transform: scale(1.1); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  

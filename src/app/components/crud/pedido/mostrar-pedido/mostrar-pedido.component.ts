@@ -61,6 +61,10 @@ export class MostrarPedidoComponent implements OnInit {
   cols!: Column[];
   exportColumns!: ExportColumn[];
 
+  expandedRows: { [key: number]: boolean } = {}; 
+
+  pedidosPorMenu: { [menuId: number]: Pedido[] } = {};
+
   @ViewChild('dt') dt!: Table;
 
   constructor(

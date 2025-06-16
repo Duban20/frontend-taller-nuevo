@@ -1,15 +1,13 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-unauthorized',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="text-center mt-5">
-      <h2>Acceso denegado</h2>
-      <p>No tienes permisos para acceder a esta sección.</p>
-    </div>
-  `
+  imports: [RouterModule, ButtonModule],
+  templateUrl: './unauthorized.component.html',
+  styleUrl: './unauthorized.component.scss'
 })
-export class UnauthorizedComponent {}
+export class UnauthorizedComponent {
+
+}

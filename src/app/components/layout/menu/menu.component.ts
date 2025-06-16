@@ -24,6 +24,11 @@ export class MenuComponent {
             routerLink: ['/pages'],
             items: [
                 {
+                    label: 'Inicio',
+                    icon: 'pi pi-fw pi-home',
+                    routerLink: ['/layout/inicio']
+                },
+                {
                     label: 'Clientes',
                     icon: 'pi pi-fw pi-users',
                     routerLink: ['/layout/clientes']
